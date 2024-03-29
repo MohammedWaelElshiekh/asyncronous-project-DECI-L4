@@ -95,14 +95,22 @@ async function handleCreateRace() {
 
   // The race has been created, now start the countdown
   // TODO - call the async function runCountdown
-  runCountdown();
+  runCountdown()
+    .then((x) => {
+      startRace(store.race_id);
+      return;
+    })
+    .then((v) => {
+      runRace(store.race_id);
+      return;
+    });
+  // startRace(store.race_id);
+  // runRace(store.race_id);
   // TODO - call the async function startRace
-  await startRace(store.race_id);
   // TODO - call the async function runRace
-  await runRace(store.race_id);
 }
 
-async function runRace(raceID) {
+function runRace(raceID) {
   return new Promise((resolve) => {
     // TODO - use Javascript's built in setInterval method to get race info every 500ms
     const raceInterval = setInterval(async () => {
@@ -134,20 +142,20 @@ async function runRace(raceID) {
   // remember to add error handling for the Promise
 }
 
-async function runCountdown() {
+function runCountdown() {
   try {
     // wait for the DOM to load
-    await delay(1000);
-    let timer = 3;
+    delay(1000);
 
     return new Promise((resolve) => {
+      let timer = 3;
       // TODO - use Javascript's built in setInterval method to count down once per second
       const theInterval = setInterval(() => {
         document.getElementById("big-numbers").innerHTML = --timer;
-        if (timer == 0) {
+        if (timer === 0) {
           clearInterval(theInterval);
           resolve();
-          return;
+          // return;
         }
       }, 1000);
       // run this DOM manipulation to decrement the countdown for the user
@@ -195,6 +203,7 @@ function handleSelectTrack(target) {
 function handleAccelerate() {
   console.log("accelerate button clicked");
   // TODO - Invoke the API call to accelerate
+  accelerate(store.race_id);
 }
 
 // HTML VIEWS ------------------------------------------------
@@ -415,6 +424,6 @@ function accelerate(id) {
     method: "POST",
     ...defaultFetchOpts(),
   })
-    .then((res) => res.json())
+    .then((res) => res)
     .catch((err) => console.log("There was an error accelerating :", err));
 }

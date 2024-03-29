@@ -110,7 +110,7 @@ async function handleCreateRace() {
   // TODO - call the async function runRace
 }
 
-function runRace(raceID) {
+async function runRace(raceID) {
   return new Promise((resolve) => {
     // TODO - use Javascript's built in setInterval method to get race info every 500ms
     const raceInterval = setInterval(async () => {

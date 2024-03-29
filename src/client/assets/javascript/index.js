@@ -102,9 +102,20 @@ async function handleCreateRace() {
   await runRace(store.race_id);
 }
 
-function runRace(raceID) {
+async function runRace(raceID) {
   return new Promise((resolve) => {
     // TODO - use Javascript's built in setInterval method to get race info every 500ms
+    const raceInterval = setInterval(async () => {
+      const res = await getRace(raceID);
+      console.log(res);
+      if (res.status == "in-progress") {
+        renderAt("#leaderBoard", raceProgress(res.positions));
+      } else if (res.status == "finished") {
+        clearInterval(raceInterval); // to stop the interval from repeating
+        renderAt("#race", resultsView(res.positions)); // to render the results view
+        resolve(res); // resolve the promise
+      }
+    }, 500);
     /* 
 		TODO - if the race info status property is "in-progress", update the leaderboard by calling:
 
@@ -117,6 +128,8 @@ function runRace(raceID) {
 		renderAt('#race', resultsView(res.positions)) // to render the results view
 		reslove(res) // resolve the promise
 	*/
+  }).catch((err) => {
+    console.error(err);
   });
   // remember to add error handling for the Promise
 }
@@ -284,7 +297,7 @@ function resultsView(positions) {
 }
 
 function raceProgress(positions) {
-  let userPlayer = positions.find((e) => e.id === store.player_id);
+  let userPlayer = positions.find((e) => e.id == store.player_id);
   userPlayer.driver_name += " (you)";
 
   positions = positions.sort((a, b) => (a.segment > b.segment ? -1 : 1));
@@ -373,11 +386,11 @@ function createRace(player_id, track_id) {
     .catch((err) => console.log("Problem with createRace request::", err));
 }
 
-function getRace(id) {
+async function getRace(id) {
   // GET request to `${SERVER}/api/races/${id}`
   return fetch(`${SERVER}/api/races/${id}`, {
     method: "GET",
-    ...defaultFetchOpts(),
+    // ...defaultFetchOpts(),
   })
     .then((race) => race.json())
     .catch((e) => {
@@ -388,9 +401,9 @@ function getRace(id) {
 async function startRace(id) {
   return fetch(`${SERVER}/api/races/${id}/start`, {
     method: "POST",
-    ...defaultFetchOpts(),
+    // ...defaultFetchOpts(),
   })
-    .then((res) => res.json())
+    .then((res) => res)
     .catch((err) => console.log("Problem with startRace request::", err));
 }
 

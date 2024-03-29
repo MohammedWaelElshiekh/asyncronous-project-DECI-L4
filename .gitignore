@@ -1,2 +1,7 @@
 .DS_Store
 node_modules/
+bin/server-darwin-amd64
+bin/server-linux-386
+
+bin/server-windows-386
+bin/server-windows-amd64
